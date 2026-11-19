@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LogiTrack · Mi inventario</title><link rel="stylesheet" href="css/estilos.css"><script src="js/app.js" defer></script></head>
+<body>
+<header><a class="marca" href="/" aria-label="LogiTrack inicio"><span class="logo">✿</span> LogiTrack<span class="etiqueta">mi inventario</span></a><div class="sesion"><span id="usuarioActual"></span><button id="salir" class="secundario" hidden>Salir</button><a href="/swagger-ui.html" target="_blank" rel="noopener">Swagger ↗</a></div></header>
+<main>
+<section id="acceso" class="bienvenida">
+  <div><span class="eyebrow">TODO EN SU LUGAR</span><h1>Tu inventario,<br>un poquito más <em>simple.</em></h1><p>Organiza tus bodegas, registra cada movimiento<br>y sigue la historia de tus productos.</p><div class="ilustracion" aria-hidden="true"><div class="caja uno">✿</div><div class="caja dos">♡</div><div class="caja tres">✦</div><span class="estrella">✧</span></div><span class="nota">Pequeños detalles. Todo bajo control.</span></div>
+  <form id="formAcceso" class="tarjeta login"><span class="mini">BIENVENIDA A LOGITRACK</span><h2 id="tituloAcceso">Qué lindo verte por aquí ♡</h2><p id="textoAcceso">Inicia sesión para consultar tu inventario.</p><label>Usuario<input name="nombre" autocomplete="username" required maxlength="50" placeholder="Tu nombre de usuario"></label><label>Contraseña<input name="clave" type="password" autocomplete="current-password" required maxlength="60" placeholder="Tu contraseña"></label><button type="submit" id="botonAcceso">Entrar a mi inventario →</button><button type="button" id="cambiarAcceso" class="enlace">¿Primera vez? Crear una cuenta</button><p class="ayuda">Las cuentas nuevas tienen rol EMPLEADO.</p></form>
+</section>
+<div id="panel" hidden>
+  <div class="cabecera"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Todo en orden <span class="flor">✿</span></h1><p>Un vistazo a lo que entra, sale y se queda.</p></div><span class="etiqueta">LogiTrack S.A.</span></div>
+  <nav aria-label="Secciones"><button data-vista="resumen" class="activo">Resumen</button><button data-vista="bodegas">Bodegas</button><button data-vista="productos">Productos</button><button data-vista="movimientos">Movimientos</button><button data-vista="auditorias" data-admin>Auditorías</button></nav>
+  <section id="resumen" class="vista">
+    <div id="indicadores" class="indicadores"></div>
+    <div class="dos-columnas"><article class="tarjeta"><span class="mini">LO QUE TENEMOS</span><h2>Stock por bodega</h2><div id="stockBodegas"></div></article><article class="tarjeta"><span class="mini">LOS QUE MÁS SE MUEVEN</span><h2>Productos más movidos</h2><p class="ayuda">Unidades en entradas, salidas y transferencias.</p><div id="masMovidos"></div></article></div>
+  </section>
+  <section id="bodegas" class="vista" hidden>
+    <div class="titulo-seccion"><div><h2>Mis bodegas</h2><p>Cada producto tiene su lugar.</p></div><button id="nuevaBodega" data-admin>+ Nueva bodega</button></div>
+    <form id="formBodega" class="tarjeta formulario" hidden><h3 id="tituloBodega">Nueva bodega</h3><input name="id" type="hidden"><div class="campos"><label>Nombre<input name="nombre" required maxlength="80"></label><label>Ubicación<input name="ubicacion" required maxlength="150"></label><label>Capacidad en unidades<input name="capacidad" type="number" min="1" max="2147483647" required></label><label>Encargado<input name="encargado" required maxlength="80"></label></div><button>Guardar bodega</button><button type="button" class="secundario" data-cancelar="formBodega">Cancelar</button></form>
+    <div id="listaBodegas" class="tarjeta tabla"></div><div id="detalleBodega" class="tarjeta" hidden></div>
+  </section>
+  <section id="productos" class="vista" hidden>
+    <div class="titulo-seccion"><div><h2>Mis productos</h2><p>El stock se actualiza al registrar movimientos.</p></div><div class="acciones"><label class="check"><input id="stockBajo" type="checkbox"> Solo stock bajo (&lt; 10)</label><button id="nuevoProducto" data-admin>+ Nuevo producto</button></div></div>
+    <form id="formProducto" class="tarjeta formulario" hidden><h3 id="tituloProducto">Nuevo producto</h3><input name="id" type="hidden"><div class="campos"><label>Nombre<input name="nombre" required maxlength="80"></label><label>Categoría<input name="categoria" required maxlength="60"></label><label>Precio (COP)<input name="precio" type="number" min="0.01" max="9999999999.99" step="0.01" required></label></div><p class="ayuda">Los productos nuevos empiezan en cero. Agrega stock con una entrada.</p><button>Guardar producto</button><button type="button" class="secundario" data-cancelar="formProducto">Cancelar</button></form>
+    <div id="listaProductos" class="tarjeta tabla"></div>
+  </section>
+  <section id="movimientos" class="vista" hidden>
+    <div class="titulo-seccion"><div><h2>Cada movimiento cuenta</h2><p>Entradas, salidas y transferencias, en un solo lugar.</p></div><button id="nuevoMovimiento">+ Registrar movimiento</button></div>
+    <form id="formMovimiento" class="tarjeta formulario" hidden><h3>Nuevo movimiento</h3><div class="campos"><label>Tipo<select name="tipo"><option>ENTRADA</option><option>SALIDA</option><option>TRANSFERENCIA</option></select></label><label id="campoOrigen">Bodega origen<select name="bodegaOrigenId"></select></label><label id="campoDestino">Bodega destino<select name="bodegaDestinoId"></select></label></div><div id="detalles"></div><button type="button" id="agregarProducto" class="secundario">+ Otro producto</button><p class="ayuda">La fecha y el usuario se guardan automáticamente.</p><button>Guardar movimiento</button><button type="button" class="secundario" data-cancelar="formMovimiento">Cancelar</button></form>
+    <form id="filtroMovimientos" class="filtros"><label>Desde (UTC)<input name="desde" type="datetime-local" step="1"></label><label>Hasta (UTC)<input name="hasta" type="datetime-local" step="1"></label><button>Filtrar</button><button type="button" id="limpiarFechas" class="secundario">Ver todos</button></form><div id="listaMovimientos" class="tarjeta tabla"></div>
+  </section>
+  <section id="auditorias" class="vista" hidden>
+    <div class="titulo-seccion"><div><h2>La historia de tus cambios</h2><p>Quién cambió qué y cuándo. Solo consulta.</p></div></div>
+    <form id="filtroAuditorias" class="filtros"><label>Usuario<input name="usuario" placeholder="Todos los usuarios"></label><label>Operación<select name="operacion"><option value="">Todas</option><option>INSERT</option><option>UPDATE</option><option>DELETE</option></select></label><button>Filtrar</button></form><div id="listaAuditorias" class="tarjeta tabla"></div>
+  </section>
+</div>
+<div id="mensaje" role="status" aria-live="polite" hidden></div>
+</main><footer>LogiTrack <span>✿</span> Un lugar para cada cosa.</footer>
+</body></html>
